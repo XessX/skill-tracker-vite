@@ -80,21 +80,23 @@ function App() {
           path="/"
           element={
             loading ? (
-              <div className="p-10 text-white text-center">Loading...</div>
+              <div className="p-10 text-center text-gray-800 dark:text-white">Loading...</div>
             ) : user ? (
               <Home user={user} />
             ) : (
-              <div className="text-white text-center p-10">
-                <h2 className="text-2xl mb-4">🚫 You must be logged in.</h2>
+              <div className="p-10 text-center bg-white dark:bg-gray-900 text-gray-800 dark:text-white min-h-screen">
+                <h2 className="text-2xl font-semibold mb-4">🚫 You must be logged in.</h2>
+
                 <Link
                   to="/auth"
-                  className="text-blue-400 underline hover:text-blue-200 block mb-2"
+                  className="text-blue-500 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 block mb-2"
                 >
                   Go to Login
                 </Link>
+
                 <Link
                   to="/auth"
-                  className="text-blue-400 underline hover:text-blue-200"
+                  className="text-green-500 dark:text-green-400 underline hover:text-green-700 dark:hover:text-green-300"
                 >
                   Or Register here
                 </Link>
