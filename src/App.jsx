@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import Projects from "./pages/Projects";
 import Resume from "./pages/Resume";
 import Contact from "./pages/Contact";
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -116,6 +117,7 @@ function App() {
           }
         />
       </Routes>
+      <Analytics/>
       <Footer />
     </div>
   );
