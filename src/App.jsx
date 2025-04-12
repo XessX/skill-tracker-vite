@@ -13,6 +13,8 @@ import Contact from "./pages/Contact";
 import Footer from "./components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import { Title, Meta } from "react-head";
+import { NavLink } from "react-router-dom";
+import { BsSun, BsMoonStarsFill } from "react-icons/bs";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -56,21 +58,43 @@ function App() {
 
       <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
         {/* 🔹 Navbar */}
-        <nav className="flex gap-4 p-4 bg-gray-100 dark:bg-gray-800 text-black dark:text-white justify-between shadow-md">
-          <div className="flex gap-4">
-            <Link to="/" className="hover:underline">Home</Link>
-            <Link to="/projects" className="hover:underline">Projects</Link>
-            <Link to="/resume" className="hover:underline">Resume</Link>
-            <Link to="/contact" className="hover:underline">Contact</Link>
-            <Link to="/about" className="hover:underline">About</Link>
+        <nav className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-800 shadow-md text-black dark:text-white p-4 flex justify-between items-center">
+          {/* Brand or Logo */}
+          <NavLink to="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
+            SkillTracker
+          </NavLink>
+
+          {/* Links */}
+          <div className="flex items-center gap-6">
+            {[
+              { path: "/", name: "Home" },
+              { path: "/projects", name: "Projects" },
+              { path: "/resume", name: "Resume" },
+              { path: "/contact", name: "Contact" },
+              { path: "/about", name: "About" },
+            ].map(({ path, name }) => (
+              <NavLink
+                key={path}
+                to={path}
+                className={({ isActive }) =>
+                  `text-sm font-medium hover:underline transition ${
+                    isActive ? "text-blue-500 dark:text-blue-400 underline" : "text-gray-700 dark:text-gray-300"
+                  }`
+                }
+              >
+                {name}
+              </NavLink>
+            ))}
           </div>
 
+          {/* Right Controls */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setDarkMode((prev) => !prev)}
-              className="bg-gray-300 dark:bg-gray-700 text-black dark:text-white px-3 py-2 rounded"
+              className="p-2 bg-gray-300 dark:bg-gray-700 rounded-full"
+              title="Toggle Theme"
             >
-              {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+              {darkMode ? <BsSun className="text-yellow-500" /> : <BsMoonStarsFill className="text-blue-600" />}
             </button>
 
             {user ? (
@@ -84,9 +108,9 @@ function App() {
                 </button>
               </>
             ) : (
-              <Link to="/auth" className="text-blue-500 dark:text-blue-400 underline">
+              <NavLink to="/auth" className="text-blue-500 dark:text-blue-400 underline text-sm">
                 Login
-              </Link>
+              </NavLink>
             )}
           </div>
         </nav>
