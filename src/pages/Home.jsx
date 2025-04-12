@@ -20,15 +20,29 @@ import CategoryStats from "../components/CategoryStats";
 import CategoryChart from "../components/CategoryChart";
 import { Title, Meta } from 'react-head';
 
-function Home({ user }) {
+function Home({ user, loading }) {
+  const isGuest = !user || !user.uid;
+
   const [skills, setSkills] = useState([]);
+  
+  useEffect(() => {
+    if (!loading && isGuest) {
+      const saved = localStorage.getItem("guestSkills");
+      if (saved) setSkills(JSON.parse(saved));
+    }
+  }, [loading, isGuest]);
+  
+  
   const [input, setInput] = useState("");
   const [category, setCategory] = useState("Frontend");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const userSkillsRef = collection(db, "users", user.uid, "skills");
+  const userSkillsRef = user
+  ? collection(db, "users", user.uid, "skills")
+  : null;
+
 
   const categoryData = Object.entries(
     skills.reduce((acc, skill) => {
@@ -36,20 +50,25 @@ function Home({ user }) {
       return acc;
     }, {})
   ).map(([category, count]) => ({ category, count }));
-  
+
+
   // 🔁 Real-time sync
   useEffect(() => {
+    if (isGuest || !userSkillsRef) return;
+  
     const q = query(userSkillsRef, orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setSkills(data);
     });
-
+  
     return () => unsubscribe();
-  }, []);
+  }, [userSkillsRef]);
+  
+  
 
   // ➕ Add skill
   const addSkill = async () => {
@@ -57,7 +76,7 @@ function Home({ user }) {
       toast.error("❌ Skill cannot be empty");
       return;
     }
-
+  
     const exists = skills.some(
       (s) => s.name.toLowerCase() === input.trim().toLowerCase()
     );
@@ -65,39 +84,64 @@ function Home({ user }) {
       toast.error("⚠️ Skill already exists");
       return;
     }
-
-    await addDoc(userSkillsRef, {
-      name: input.trim(),
-      category,
-      createdAt: new Date()
-    });
-
-    toast.success("✅ Skill added");
+  
+    if (isGuest) {
+      setSkills((prev) => [
+        {
+          id: Date.now(), // ✅ Assign unique ID for guest
+          name: input.trim(),
+          category,
+          createdAt: new Date(),
+        },
+        ...prev,
+      ]);
+      toast.success("✨ Skill added (not saved)");
+    } else {
+      await addDoc(userSkillsRef, {
+        name: input.trim(),
+        category,
+        createdAt: new Date(),
+      });
+      toast.success("✅ Skill saved");
+    }
+  
     setInput("");
   };
+  
 
   // ❌ Remove one
   const removeSkill = async (id) => {
-    await deleteDoc(doc(db, "users", user.uid, "skills", id));
-    toast("🗑️ Skill removed");
+    if (isGuest) {
+      setSkills((prev) => prev.filter((skill) => skill.id !== id));
+      toast("🗑️ Skill removed");
+    }else{
+      await deleteDoc(doc(db, "users", user.uid, "skills", id));
+      toast("🗑️ Skill removed");
+    }
   };
-
+  
   // 🧹 Clear all
   const clearSkills = async () => {
-    const confirmDelete = confirm("Delete ALL your skills?");
+    const confirmDelete = window.confirm("🧨 Are you sure you want to delete ALL your skills?");
     if (!confirmDelete) return;
-
-    const snapshot = await getDocs(userSkillsRef);
-    const deletes = snapshot.docs.map((docSnap) =>
-      deleteDoc(doc(db, "users", user.uid, "skills", docSnap.id))
-    );
-
-    await toast.promise(Promise.all(deletes), {
-      loading: "Deleting...",
-      success: "✅ All skills cleared!",
-      error: "❌ Something went wrong",
-    });
-  };
+  
+    if (isGuest) {
+      setSkills([]);
+      localStorage.removeItem("guestSkills");
+      toast.success("🧹 Cleared guest skills!");
+    } else {
+      const snapshot = await getDocs(userSkillsRef);
+      const deletes = snapshot.docs.map((docSnap) =>
+        deleteDoc(doc(db, "users", user.uid, "skills", docSnap.id))
+      );
+  
+      await toast.promise(Promise.all(deletes), {
+        loading: "Deleting...",
+        success: "✅ All skills cleared!",
+        error: "❌ Something went wrong",
+      });
+    }
+  };  
 
   // 🔎 Filter logic
   const filteredSkills = skills.filter((skill) => {
@@ -141,6 +185,18 @@ function Home({ user }) {
         </div>
 
         {skills.length > 0 && <ClearButton onClear={clearSkills} />}
+
+        {isGuest && (
+          <div className="bg-yellow-100 text-yellow-800 text-sm p-3 rounded mb-4 shadow">
+            You're using the demo mode — <strong>Login</strong> to save your skills to the cloud 🔐
+          </div>
+        )}
+
+        {!user && (
+          <p className="text-sm text-yellow-400 bg-yellow-100 dark:bg-yellow-900 px-4 py-2 rounded mb-4">
+            🔒 You're in guest mode. Log in to save your skills permanently.
+          </p>
+        )}
 
         <SkillProgress total={skills.length} />
         <CategoryStats skills={skills} />
@@ -196,7 +252,7 @@ function Home({ user }) {
         {/* 📦 Skills */}
         <h3 className="text-xl font-semibold mb-2">Your Skills:</h3>
         {filteredSkills.length > 0 ? (
-          <SkillList skills={filteredSkills} onRemoveSkill={removeSkill} />
+          <SkillList skills={filteredSkills} onRemoveSkill={isGuest ? (i) => removeSkill(i) : (id) => removeSkill(id)}/>
         ) : (
           <p className="text-center text-gray-500 dark:text-gray-400">🔍 No matching skills found.</p>
         )}

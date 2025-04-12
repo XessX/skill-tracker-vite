@@ -3,11 +3,13 @@ import { CATEGORY_COLORS } from "../constants/categories";
 
 function SkillItem({ skill, onRemove }) {
   const formattedTime = skill.createdAt
-    ? new Date(skill.createdAt.seconds * 1000).toLocaleString("en-US", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
-    : "⏳ Unknown";
+  ? new Date(skill.createdAt.seconds ? skill.createdAt.seconds * 1000 : skill.createdAt).toLocaleString("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })
+  : "⏳ Unknown";
+
+  
 
   return (
     <motion.li

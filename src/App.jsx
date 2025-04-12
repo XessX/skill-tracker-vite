@@ -1,15 +1,18 @@
 import { Routes, Route, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "./firebase";
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Auth from "./pages/Auth";
-import { auth } from "./firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useState, useEffect } from "react";
-import Footer from "./components/Footer";
 import Projects from "./pages/Projects";
 import Resume from "./pages/Resume";
 import Contact from "./pages/Contact";
-import { Analytics } from "@vercel/analytics/react"
+
+import Footer from "./components/Footer";
+import { Analytics } from "@vercel/analytics/react";
+import { Title, Meta } from "react-head";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -20,6 +23,9 @@ function App() {
 
   const handleLogout = async () => {
     await signOut(auth);
+    localStorage.removeItem("guestSkills");
+    setUser(null);
+    window.location.href = "/";
   };
 
   useEffect(() => {
@@ -31,7 +37,6 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // 🌙 Apply/remove dark mode class
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -43,83 +48,69 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
-      {/* 🔹 Navbar */}
-      <nav className="flex gap-4 p-4 bg-gray-100 dark:bg-gray-800 text-black dark:text-white justify-between shadow-md">
-        <div className="flex gap-4">
-          <Link to="/" className="hover:underline">Home</Link>
-          <Link to="/projects" className="hover:underline">Projects</Link>
-          <Link to="/resume" className="hover:underline">Resume</Link>
-          <Link to="/contact" className="hover:underline">Contact</Link>
-          <Link to="/about" className="hover:underline">About</Link>
-        </div>
+    <>
+      {/* 🔹 Meta SEO Tags */}
+      <Title>Al Jubair Hossain – Portfolio & Skill Tracker</Title>
+      <Meta name="description" content="Track your skills and explore projects by Al Jubair Hossain" />
+      <link rel="icon" type="image/png" href="/favicon.png" />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setDarkMode((prev) => !prev)}
-            className="bg-gray-300 dark:bg-gray-700 text-black dark:text-white px-3 py-2 rounded"
-          >
-            {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-          </button>
+      <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
+        {/* 🔹 Navbar */}
+        <nav className="flex gap-4 p-4 bg-gray-100 dark:bg-gray-800 text-black dark:text-white justify-between shadow-md">
+          <div className="flex gap-4">
+            <Link to="/" className="hover:underline">Home</Link>
+            <Link to="/projects" className="hover:underline">Projects</Link>
+            <Link to="/resume" className="hover:underline">Resume</Link>
+            <Link to="/contact" className="hover:underline">Contact</Link>
+            <Link to="/about" className="hover:underline">About</Link>
+          </div>
 
-          {user ? (
-            <>
-              <span className="text-sm text-gray-700 dark:text-gray-300">{user.email}</span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link to="/auth" className="text-blue-500 dark:text-blue-400 underline">
-              Login
-            </Link>
-          )}
-        </div>
-      </nav>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setDarkMode((prev) => !prev)}
+              className="bg-gray-300 dark:bg-gray-700 text-black dark:text-white px-3 py-2 rounded"
+            >
+              {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+            </button>
 
-      {/* 🔹 Routes */}
-      <Routes>
-        <Route path="/about" element={<About />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/resume" element={<Resume />} />
-        <Route path="/contact" element={<Contact />} />
-
-        <Route
-          path="/"
-          element={
-            loading ? (
-              <div className="p-10 text-center text-gray-800 dark:text-white">Loading...</div>
-            ) : user ? (
-              <Home user={user} />
+            {user ? (
+              <>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{user.email}</span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
-              <div className="p-10 text-center bg-white dark:bg-gray-900 text-gray-800 dark:text-white min-h-screen">
-                <h2 className="text-2xl font-semibold mb-4">🚫 You must be logged in.</h2>
+              <Link to="/auth" className="text-blue-500 dark:text-blue-400 underline">
+                Login
+              </Link>
+            )}
+          </div>
+        </nav>
 
-                <Link
-                  to="/auth"
-                  className="text-blue-500 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 block mb-2"
-                >
-                  Go to Login
-                </Link>
+        {/* 🔹 Routes */}
+        {loading ? (
+          <div className="flex justify-center items-center h-screen">
+            <p className="text-gray-600 dark:text-gray-300 text-lg animate-pulse">🔄 Loading...</p>
+          </div>
+        ) : (
+          <Routes>
+            <Route path="/" element={<Home user={user} />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/resume" element={<Resume />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        )}
 
-                <Link
-                  to="/auth"
-                  className="text-green-500 dark:text-green-400 underline hover:text-green-700 dark:hover:text-green-300"
-                >
-                  Or Register here
-                </Link>
-              </div>
-            )
-          }
-        />
-      </Routes>
-      <Analytics/>
-      <Footer />
-    </div>
+        <Analytics />
+        <Footer />
+      </div>
+    </>
   );
 }
 
