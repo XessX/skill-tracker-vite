@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CATEGORY_LIST } from "../constants/categories";
 
 function SkillInput({ input, setInput, category, setCategory, onAddSkill }) {
   const handleAdd = () => {
@@ -18,16 +19,11 @@ function SkillInput({ input, setInput, category, setCategory, onAddSkill }) {
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded px-3 py-2"
+        className="bg-gray-700 text-white rounded px-2 py-1"
       >
-        <option>Frontend</option>
-        <option>Backend</option>
-        <option>DevOps</option>
-        <option>Mobile</option>
-        <option>Cloud</option>
-        <option>Database</option>
-        <option>Machine Learning</option>
-        <option>Other</option>
+        {CATEGORY_LIST.map((cat) => (
+          <option key={cat}>{cat}</option>
+        ))}
       </select>
 
       <button

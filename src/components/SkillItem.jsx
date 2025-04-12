@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { CATEGORY_COLORS } from "../constants/categories";
 
 function SkillItem({ skill, onRemove }) {
   const formattedTime = skill.createdAt
@@ -7,17 +8,6 @@ function SkillItem({ skill, onRemove }) {
         timeStyle: "short",
       })
     : "⏳ Unknown";
-
-  const categoryColors = {
-    Frontend: "bg-blue-500",
-    Backend: "bg-green-500",
-    DevOps: "bg-purple-500",
-    Mobile: "bg-yellow-500",
-    Cloud: "bg-cyan-500",
-    Database: "bg-pink-500",
-    "Machine Learning": "bg-orange-500",
-    Other: "bg-gray-500",
-  };
 
   return (
     <motion.li
@@ -34,7 +24,7 @@ function SkillItem({ skill, onRemove }) {
         <div className="font-semibold flex items-center flex-wrap gap-2">
           {skill.name}
           <span
-            className={`px-2 py-1 rounded text-xs text-white ${categoryColors[skill.category] || "bg-gray-500"}`}
+            className={`px-2 py-1 rounded text-xs text-white ${CATEGORY_COLORS[skill.category] || "bg-gray-500"}`}
           >
             {skill.category}
           </span>

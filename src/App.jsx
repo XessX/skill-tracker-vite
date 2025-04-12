@@ -5,6 +5,10 @@ import Auth from "./pages/Auth";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
+import Footer from "./components/Footer";
+import Projects from "./pages/Projects";
+import Resume from "./pages/Resume";
+import Contact from "./pages/Contact";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -43,6 +47,9 @@ function App() {
       <nav className="flex gap-4 p-4 bg-gray-100 dark:bg-gray-800 text-black dark:text-white justify-between shadow-md">
         <div className="flex gap-4">
           <Link to="/" className="hover:underline">Home</Link>
+          <Link to="/projects" className="hover:underline">Projects</Link>
+          <Link to="/resume" className="hover:underline">Resume</Link>
+          <Link to="/contact" className="hover:underline">Contact</Link>
           <Link to="/about" className="hover:underline">About</Link>
         </div>
 
@@ -76,6 +83,10 @@ function App() {
       <Routes>
         <Route path="/about" element={<About />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/resume" element={<Resume />} />
+        <Route path="/contact" element={<Contact />} />
+
         <Route
           path="/"
           element={
@@ -105,6 +116,7 @@ function App() {
           }
         />
       </Routes>
+      <Footer />
     </div>
   );
 }
