@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { MdDownload } from "react-icons/md";
 import { Title, Meta } from 'react-head';
+import JobTimeline from "../components/JobTimeline";
+import EducationTimeline from "../components/EducationTimeline";
 
 const quotes = [
   "Transforming ideas into code 💡",
@@ -13,7 +15,13 @@ const quotes = [
 function Resume() {
   const [tab, setTab] = useState("summary");
   const [quoteIndex, setQuoteIndex] = useState(0);
+  const [githubTheme, setGithubTheme] = useState("github_light");
 
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setGithubTheme(isDark ? "react" : "github_light");
+  }, []);
+  
   const sections = [
     { key: "summary", label: "🧠 Summary" },
     { key: "skills", label: "🛠 Skills" },
@@ -74,9 +82,27 @@ function Resume() {
         className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md max-w-4xl mx-auto"
       >
         {tab === "summary" && (
-          <p className="text-lg">
-            I'm <strong>Al Jubair</strong>, a result-driven developer blending engineering precision with creative solutions. I specialize in full-stack web development, machine learning, and gamified UX — always aiming to build things that make a difference.
-          </p>
+        <div className="space-y-4 text-lg leading-relaxed">
+            <p>
+            👋 Hi, I'm <strong>Al Jubair Hossain</strong> — a passionate <span className="text-blue-500">Software Engineer</span> and <span className="text-green-500">Data Scientist</span> focused on building high-impact solutions that are not only smart but also intuitive and joyful to use.
+            </p>
+
+            <p>
+            With a solid foundation in <strong>full-stack web development</strong> and <strong>machine learning</strong>, I love blending creativity with code — whether it's crafting interactive dashboards, designing gamified user experiences, or scaling web apps with real-time features.
+            </p>
+
+            <p>
+            I'm currently pursuing my Master’s in Computing and Software at <strong>McMaster University</strong>, and my journey has taken me through exciting internships in data analysis, software development, and creative technologies like AR/VR.
+            </p>
+
+            <p>
+            I work with <span className="text-blue-400">React</span>, <span className="text-yellow-500">Python</span>, <span className="text-purple-400">Firebase</span>, and <span className="text-green-400">ML tools</span> like PyTorch and XGBoost — always with an eye on performance, scalability, and elegance.
+            </p>
+
+            <p className="italic text-sm text-gray-500 dark:text-gray-400">
+            🚀 Let’s build the future — one clean line of code at a time.
+            </p>
+        </div>
         )}
 
         {tab === "skills" && (
@@ -111,12 +137,12 @@ function Resume() {
                 { label: "Node.js", level: 80, color: "bg-green-500" },
                 { label: "Firebase", level: 80, color: "bg-green-400" },
                 { label: "MongoDB", level: 80, color: "bg-green-400" },
-                { label: "PostgreSQL", level: 65, color: "bg-green-500" },
+                { label: "PostgreSQL", level: 70, color: "bg-green-500" },
                 { label: "Firestore", level: 70, color: "bg-green-400" },
-                { label: "PyTorch", level: 85, color: "bg-green-400" },
+                { label: "PyTorch", level: 80, color: "bg-green-400" },
                 { label: "scikit-learn", level: 80, color: "bg-green-400" },
-                { label: "OpenCV", level: 70, color: "bg-green-400" },
-                { label: "XGBoost", level: 80, color: "bg-green-500" },
+                { label: "OpenCV", level: 60, color: "bg-green-400" },
+                { label: "XGBoost", level: 70, color: "bg-green-500" },
                 { label: "Docker", level: 50, color: "bg-green-600" },
                 { label: "Git / GitHub", level: 85, color: "bg-green-400" },
                 { label: "CI / CD", level: 70, color: "bg-green-600" },
@@ -146,62 +172,74 @@ function Resume() {
         </div>
         )}
 
-        {tab === "experience" && (
-          <div className="space-y-6 text-md">
-            <div>
-              <h3 className="font-bold text-lg">📊 Data Analyst Intern – Shelby’s, McMaster | 2024</h3>
-              <ul className="list-disc list-inside ml-4 text-gray-300 dark:text-gray-400">
-                <li>Automated data analysis workflows using Python & SQL</li>
-                <li>Built interactive dashboards with Power BI for stakeholders</li>
-                <li>Boosted acquisition decision accuracy by 20% via insights</li>
-              </ul>
-            </div>
+        {tab === "experience" && <JobTimeline />}
 
-            <div>
-              <h3 className="font-bold text-lg">🎮 Software Developer – Berger Paints | 2022</h3>
-              <ul className="list-disc list-inside ml-4 text-gray-300 dark:text-gray-400">
-                <li>Developed Unity-based gamified marketing app with 100K+ users</li>
-                <li>Integrated React & WebDriverIO for testing and automation</li>
-                <li>Contributed to modernizing dealer network efficiency</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg">🧠 Creative Intern – Asiatic JWT | 2020</h3>
-              <ul className="list-disc list-inside ml-4 text-gray-300 dark:text-gray-400">
-                <li>Created AR/VR demos for Nestlé, Unilever using web 3D</li>
-                <li>Enhanced pitch success rates with immersive mockups</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {tab === "education" && (
-          <div className="space-y-2 text-lg">
-            <p><strong>🎓 McMaster University</strong> – M.Eng. in Computing & Software (2023–2024)</p>
-            <p><strong>🎓 AIUB</strong> – B.Sc. in Computer Engineering (2015–2020)</p>
-          </div>
-        )}
+        {tab === "education" && <EducationTimeline />}
 
         {tab === "projects" && (
-          <ul className="space-y-4 text-md">
-            <li>
-              <strong>🖐 3D Hand Reconstruction</strong> – Machine Learning, Deep Learning, PyTorch, MediaPipe<br />
-              <a href="https://macsphere.mcmaster.ca/handle/11375/30207" className="text-blue-400 underline" target="_blank">MacSphere Thesis</a>
-            </li>
-            <li>
-              <strong>💰 Income Prediction App</strong> – Pandas, XGBoost, EDA, Random Forest<br />
-              <a href="https://github.com/XessX/Comprehensive-Data-Analysis-and-Model-Development-for-Income-Prediction-Using-Random-Forest" className="text-blue-400 underline" target="_blank">GitHub Repo</a>
-            </li>
-            <li>
-              <strong>🎮 Angry Bird Physics Engine</strong> – C++, SFML<br />
-              <a href="https://github.com/XessX/Angry_Bird_Alike" className="text-blue-400 underline" target="_blank">Source Code</a>
-            </li>
-            <li>
-              <strong>🍱 Food Classification CNN</strong> – PyTorch, OpenCV, CNN<br />
-              <a href="https://github.com/XessX/cnn_based_food_classification" className="text-blue-400 underline" target="_blank">Model Code</a>
-            </li>
-          </ul>
+        <div className="grid md:grid-cols-2 gap-6">
+            {[
+            {
+                title: "🖐 3D Hand Reconstruction",
+                tech: "Machine Learning, Deep Learning, PyTorch, MediaPipe",
+                link: "https://macsphere.mcmaster.ca/handle/11375/30207",
+                label: "MacSphere Thesis",
+            },
+            {
+                title: "💰 Income Prediction App",
+                tech: "Pandas, XGBoost, EDA, Random Forest",
+                link: "https://github.com/XessX/Comprehensive-Data-Analysis-and-Model-Development-for-Income-Prediction-Using-Random-Forest",
+                label: "GitHub Repo",
+            },
+            {
+                title: "🎮 Angry Bird Physics Engine",
+                tech: "C++, SFML",
+                link: "https://github.com/XessX/Angry_Bird_Alike",
+                label: "Source Code",
+            },
+            {
+                title: "🍱 Food Classification CNN",
+                tech: "PyTorch, OpenCV, CNN",
+                link: "https://github.com/XessX/cnn_based_food_classification",
+                label: "Model Code",
+            },
+            {
+                title: "📘 Skill Tracker App",
+                tech: "React, Firebase, Tailwind CSS, Chart.js",
+                link: "https://github.com/XessX/skill-tracker-vite",
+                live: "https://skill-tracker-vite.vercel.app",
+                label: "GitHub & Live",
+            },
+            ].map((project, idx) => (
+            <div
+                key={idx}
+                className="bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-lg p-5 shadow hover:shadow-xl transition"
+            >
+                <h3 className="text-lg font-bold text-blue-500 dark:text-blue-400 mb-1">{project.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{project.tech}</p>
+                <div className="space-x-3">
+                {project.link && (
+                    <a
+                    href={project.link}
+                    target="_blank"
+                    className="text-blue-400 underline text-sm"
+                    >
+                    GitHub
+                    </a>
+                )}
+                {project.live && (
+                    <a
+                    href={project.live}
+                    target="_blank"
+                    className="text-green-400 underline text-sm"
+                    >
+                    Live Site
+                    </a>
+                )}
+                </div>
+            </div>
+            ))}
+        </div>
         )}
 
         {tab === "playground" && (
@@ -213,21 +251,39 @@ function Resume() {
         )}
 
         {tab === "links" && (
-        <ul className="space-y-2 text-md">
-            <li className="flex items-center gap-2"><FaEnvelope /> aljubair707@gmail.com</li>
-            <li className="flex items-center gap-2"><FaGithub /><a href="https://github.com/XessX" className="text-blue-400 underline">github.com/XessX</a></li>
-            <li className="flex items-center gap-2"><FaLinkedin /><a href="https://www.linkedin.com/in/al-jubair-hossain-2ab89011b/" className="text-blue-400 underline">LinkedIn Profile</a></li>
-            <li className="flex items-center gap-2"><MdDownload /><a href="/Al_Jubair_Hossain_Resume.pdf" className="text-green-400 underline" download>Download PDF Resume</a></li>
-            <li className="flex items-center gap-2"><MdDownload /><a href="/AlJubair.vcf" className="text-purple-400 underline" download>Save Contact (vCard)</a></li>
+        <div className="space-y-6 text-md">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+            <a href="mailto:aljubair707@gmail.com" className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 hover:bg-gray-200 transition">
+                <FaEnvelope className="mx-auto text-2xl text-blue-500 mb-2" />
+                <p className="text-sm font-semibold">aljubair707@gmail.com</p>
+            </a>
+            <a href="https://github.com/XessX" target="_blank" className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 hover:bg-gray-200 transition">
+                <FaGithub className="mx-auto text-2xl text-black dark:text-white mb-2" />
+                <p className="text-sm font-semibold">GitHub</p>
+            </a>
+            <a href="https://www.linkedin.com/in/al-jubair-hossain-2ab89011b/" target="_blank" className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 hover:bg-gray-200 transition">
+                <FaLinkedin className="mx-auto text-2xl text-blue-600 mb-2" />
+                <p className="text-sm font-semibold">LinkedIn</p>
+            </a>
+            <a href="/Al_Jubair_Hossain_Resume.pdf" download className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 hover:bg-gray-200 transition">
+                <MdDownload className="mx-auto text-2xl text-green-500 mb-2" />
+                <p className="text-sm font-semibold">Download Resume</p>
+            </a>
+            <a href="/AlJubair.vcf" download className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 hover:bg-gray-200 transition">
+                <MdDownload className="mx-auto text-2xl text-purple-400 mb-2" />
+                <p className="text-sm font-semibold">Save vCard</p>
+            </a>
+            </div>
+
             <div className="mt-6 text-center">
-            <h3 className="font-bold text-md mb-2">📊 My GitHub Activity</h3>
+            <h3 className="font-bold text-lg mb-2 text-blue-500">📊 My GitHub Activity</h3>
             <img
-                src="https://github-readme-stats.vercel.app/api?username=XessX&show_icons=true&theme=react"
-                alt="GitHub Stats"
-                className="mx-auto rounded-lg shadow-md w-full max-w-md"
+            src={`https://github-readme-stats.vercel.app/api?username=XessX&show_icons=true&theme=${githubTheme}`}
+            alt="GitHub Stats"
+            className="mx-auto rounded-lg shadow-md w-full max-w-md"
             />
             </div>
-        </ul>
+        </div>
         )}
       </motion.div>
     </div>
