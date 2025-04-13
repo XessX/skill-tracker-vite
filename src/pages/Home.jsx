@@ -150,7 +150,7 @@ function Home({ user, loading }) {
           </h1>
           <p className="text-md text-gray-500 dark:text-gray-400">
             {isGuest
-              ? "You're using guest mode. Log in to save progress and build a nice resume!"
+              ? "You're using guest mode. Log in to save progress and build a nice resume inside!"
               : `Welcome back, ${user?.email}`}
           </p>
         </div>
