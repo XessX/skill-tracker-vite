@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, NavLink, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase";
@@ -25,30 +25,34 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // ✅ Logout handler
+  // 🔐 Logout handler
   const handleLogout = async () => {
-    await signOut(auth);
-    localStorage.removeItem("guestSkills"); // ✅ Clear guest skills
-    setUser(null);
-    navigate("/", { replace: true }); // ✅ Proper navigation
+    try {
+      await signOut(auth);
+      localStorage.removeItem("guestSkills"); // ✅ always clear
+      setUser(null);
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
-  // ✅ Monitor auth changes
+  // 🔁 Monitor Auth State
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        localStorage.removeItem("guestSkills"); // ✅ remove guest data on login
+      }
       setUser(currentUser);
       setLoading(false);
-
-      if (currentUser) {
-        localStorage.removeItem("guestSkills"); // ✅ Cleanup on real login
-      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // ✅ Theme setup
+  // 💡 Sync theme
   useEffect(() => {
     const theme = darkMode ? "dark" : "light";
     document.documentElement.classList.toggle("dark", darkMode);
@@ -61,15 +65,15 @@ function App() {
       <Meta name="description" content="Track your skills and explore projects by Al Jubair Hossain" />
       <link rel="icon" type="image/png" href="/favicon.png" />
 
-      <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
-        {/* ✅ Navbar */}
-        <nav className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-800 shadow-md text-black dark:text-white p-4">
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
+        {/* 🔹 Navbar */}
+        <nav className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-800 shadow-md p-4">
           <div className="flex justify-between items-center max-w-7xl mx-auto">
             <NavLink to="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
               SkillTracker
             </NavLink>
 
-            {/* ✅ Desktop Nav */}
+            {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-6">
               {[
                 { path: "/", name: "Home" },
@@ -93,18 +97,17 @@ function App() {
               ))}
             </div>
 
-            {/* ✅ Auth + Theme */}
+            {/* Right Controls */}
             <div className="flex items-center gap-3">
-              {/* Theme toggle */}
+              {/* Theme Toggle */}
               <button
                 onClick={() => setDarkMode((prev) => !prev)}
                 className="p-2 bg-gray-300 dark:bg-gray-700 rounded-full"
-                title="Toggle Theme"
               >
                 {darkMode ? <BsSun className="text-yellow-500" /> : <BsMoonStarsFill className="text-blue-600" />}
               </button>
 
-              {/* Auth State */}
+              {/* Auth */}
               {user ? (
                 <>
                   <span className="hidden sm:inline text-sm text-gray-700 dark:text-gray-300">{user.email}</span>
@@ -133,7 +136,7 @@ function App() {
                 </div>
               )}
 
-              {/* Mobile nav toggle */}
+              {/* Mobile Menu Toggle */}
               <button
                 className="md:hidden text-2xl p-2"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -143,7 +146,7 @@ function App() {
             </div>
           </div>
 
-          {/* ✅ Mobile Nav */}
+          {/* Mobile Nav */}
           {menuOpen && (
             <div className="md:hidden mt-4 flex flex-col gap-3 px-4">
               {[
@@ -185,7 +188,7 @@ function App() {
           )}
         </nav>
 
-        {/* ✅ Routing */}
+        {/* Page Routing */}
         {loading ? (
           <div className="flex justify-center items-center h-screen">
             <p className="text-gray-600 dark:text-gray-300 text-lg animate-pulse">🔄 Loading...</p>
@@ -204,7 +207,7 @@ function App() {
               path="/publish"
               element={
                 user ? (
-                  <PublishResume user={user} skills={[]} />
+                  <PublishResume user={user} />
                 ) : (
                   <Navigate to="/auth" replace />
                 )

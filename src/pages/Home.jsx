@@ -22,7 +22,6 @@ import { CATEGORY_LIST } from "../constants/categories";
 import { Title, Meta } from "react-head";
 
 function Home({ user, loading }) {
-  const isGuest = !user || !user.uid;
   const [skills, setSkills] = useState([]);
   const [input, setInput] = useState("");
   const [category, setCategory] = useState("Frontend");
@@ -30,17 +29,16 @@ function Home({ user, loading }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const userSkillsRef = user
-    ? collection(db, "users", user.uid, "skills")
-    : null;
+  const isGuest = !user || !user.uid;
+  const userSkillsRef = user ? collection(db, "users", user.uid, "skills") : null;
 
-  // 🔁 Load guest skills
+  // 🔁 Load guest skills when logged out
   useEffect(() => {
     if (!loading && isGuest) {
       const saved = localStorage.getItem("guestSkills");
-      if (saved) setSkills(JSON.parse(saved));
+      setSkills(saved ? JSON.parse(saved) : []);
     }
-  }, [loading, isGuest]);
+  }, [loading, user]); // 🔁 user changes here
 
   // 💾 Save guest skills
   useEffect(() => {
@@ -60,11 +58,10 @@ function Home({ user, loading }) {
         ...doc.data(),
       }));
       setSkills(data);
-      localStorage.setItem("userSkills", JSON.stringify(data)); // cache
     });
 
     return () => unsubscribe();
-  }, [userSkillsRef]);
+  }, [userSkillsRef, isGuest]);
 
   // ➕ Add skill
   const addSkill = async () => {
@@ -126,13 +123,9 @@ function Home({ user, loading }) {
   };
 
   const filteredSkills = skills.filter((skill) => {
-    const matchesSearch = skill.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All" || skill.category === selectedCategory;
-    const matchesActiveCategory =
-      activeCategory === "All" || skill.category === activeCategory;
+    const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || skill.category === selectedCategory;
+    const matchesActiveCategory = activeCategory === "All" || skill.category === activeCategory;
     return matchesSearch && matchesCategory && matchesActiveCategory;
   });
 
@@ -144,33 +137,34 @@ function Home({ user, loading }) {
       <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white py-10 px-4 transition-colors duration-300">
         {/* 🌟 Header */}
         <div className="flex justify-between items-center mb-6 max-w-3xl mx-auto">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-blue-500">
-            🚀 Skill Tracker
-          </h1>
-          <p className="text-md text-gray-500 dark:text-gray-400">
-            {isGuest
-              ? "You're using guest mode. Log in to save progress and build a nice resume inside!"
-              : `Welcome back, ${user?.email}`}
-          </p>
-        </div>
-
-        {!isGuest && (
-          <div className="flex gap-2 mb-6 justify-end">
-            <Link to="/publish" className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
-              📤 Publish Resume
-            </Link>
-            <Link to={`/resume/${user.email.split("@")[0]}`} className="bg-green-600 text-white px-4 py-2 rounded text-sm">
-              🌍 View Resume
-            </Link>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-blue-500">
+              🚀 Skill Tracker
+            </h1>
+            <p className="text-md text-gray-500 dark:text-gray-400">
+              {isGuest
+                ? "You're using guest mode. Log in to save progress and build a nice resume inside!"
+                : `Welcome back, ${user?.email}`}
+            </p>
           </div>
-        )}
 
-      </div>
+          {!isGuest && (
+            <div className="flex gap-2 mb-6 justify-end">
+              <Link to="/publish" className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
+                📤 Publish Resume
+              </Link>
+              <Link
+                to={`/resume/${user.email.split("@")[0]}`}
+                className="bg-green-600 text-white px-4 py-2 rounded text-sm"
+              >
+                🌍 View Resume
+              </Link>
+            </div>
+          )}
+        </div>
 
         <div className="max-w-xl mx-auto bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg p-6">
           {skills.length > 0 && <ClearButton onClear={clearSkills} />}
-
           <SkillProgress total={skills.length} />
           <CategoryStats skills={skills} />
           {skills.length > 0 && <CategoryChart skills={skills} />}

@@ -95,17 +95,24 @@ function PublishResume({ user }) {
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        const snapshot = await getDocs(collection(db, `users/${user.uid}/skills`));
-        const userSkills = snapshot.docs.map((doc) => doc.data());
-        setSkills(userSkills);
+        if (user?.uid) {
+          const snapshot = await getDocs(collection(db, `users/${user.uid}/skills`));
+          const userSkills = snapshot.docs.map((doc) => doc.data());
+          setSkills(userSkills);
+        } else {
+          // 🔁 Use guestSkills from localStorage
+          const guestSkills = JSON.parse(localStorage.getItem("guestSkills") || "[]");
+          setSkills(guestSkills);
+        }
       } catch (err) {
         console.error("Error fetching skills:", err);
         toast.error("⚠️ Failed to load skills.");
       }
     };
-
-    if (user?.uid) fetchSkills();
+  
+    fetchSkills();
   }, [user]);
+  
 
   const handlePublish = async () => {
     if (!username || !fullName || !email) {
