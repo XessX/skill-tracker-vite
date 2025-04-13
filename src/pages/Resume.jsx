@@ -5,6 +5,8 @@ import { MdDownload } from "react-icons/md";
 import { Title, Meta } from 'react-head';
 import JobTimeline from "../components/JobTimeline";
 import EducationTimeline from "../components/EducationTimeline";
+import HookPlayground from "../components/HookPlayground";
+import { Link } from "react-router-dom";
 
 const quotes = [
   "Transforming ideas into code 💡",
@@ -242,13 +244,14 @@ function Resume() {
         </div>
         )}
 
-        {tab === "playground" && (
-          <div className="text-center">
-            <p className="text-xl font-semibold mb-3">🎮 React Mini Playground: Click Counter</p>
-            <PlaygroundCounter />
-            <FunActivityQuote />
-          </div>
-        )}
+            {tab === "playground" && (
+            <div className="text-center">
+                <p className="text-xl font-semibold mb-3">🎮 React Mini Playground</p>
+                <PlaygroundCounter />
+                <HookPlayground />
+                <FunActivityQuote />
+            </div>
+            )}
 
         {tab === "links" && (
         <div className="space-y-6 text-md">
