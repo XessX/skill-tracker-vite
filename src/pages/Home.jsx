@@ -145,10 +145,10 @@ function Home({ user, loading }) {
         {/* 🌟 Header */}
         <div className="flex justify-between items-center mb-6 max-w-3xl mx-auto">
         <div>
-          <h1 className="text-3xl sm:text-3xl font-bold text-blue-500">
-            🚀 Skill Tracker & Resume Builder
+          <h1 className="text-3xl sm:text-4xl font-bold text-blue-500">
+            🚀 Skill Tracker
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-md text-gray-500 dark:text-gray-400">
             {isGuest
               ? "You're using guest mode. Log in to save progress and build a nice resume!"
               : `Welcome back, ${user?.email}`}
