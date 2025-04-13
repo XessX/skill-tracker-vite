@@ -31,9 +31,9 @@ function App() {
   const handleLogout = async () => {
     await signOut(auth);
     localStorage.removeItem("guestSkills");
-    window.location.href = "/"; // hard reset ensures all in-memory state is cleared
+    setUser(null);
+    window.location.href = "/";
   };
-  
 
   const [menuOpen, setMenuOpen] = useState(false);
 

@@ -1,6 +1,4 @@
-// src/pages/AuthForm.jsx
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -9,14 +7,18 @@ import {
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
-function AuthForm() {
+function AuthForm({ mode = "login" }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(mode !== "register");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsLogin(mode !== "register");
+  }, [mode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,6 +32,10 @@ function AuthForm() {
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
+
+      // Remove any leftover guest data
+      localStorage.removeItem("guestSkills");
+
       navigate("/");
       setEmail("");
       setPassword("");
