@@ -42,7 +42,7 @@ A beautiful full-stack web app built with **React + Firebase** that allows users
 
 ## 📸 Preview
 
-![Skill Tracker UI Screenshot](https://via.placeholder.com/1200x600?text=Add+your+UI+Screenshot+here)
+![Skill Tracker UI Screenshot](https://pasteboard.co/OUD4cshvJp1b.png)
 
 ---
 
